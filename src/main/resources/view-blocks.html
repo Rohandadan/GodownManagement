@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Blocks - Godown Management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .compartment-section {
+            margin-bottom: 30px;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .block-card {
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .block-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .occupied {
+            border-left: 5px solid #dc3545;
+        }
+        .available {
+            border-left: 5px solid #28a745;
+        }
+        .capacity-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .capacity-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .capacity-full {
+            background-color: #dc3545;
+        }
+        .capacity-partial {
+            background-color: #ffc107;
+        }
+        .capacity-empty {
+            background-color: #28a745;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active">View Blocks</li>
+            </ol>
+        </nav>
+        
+        <!-- Statistics Overview -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="stats-card">
+                    <h2 class="text-center mb-3">Godown Overview</h2>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h4>Total Compartments</h4>
+                            <h3>3</h3>
+                        </div>
+                        <div class="col-md-3">
+                            <h4>Total Blocks</h4>
+                            <h3>48</h3>
+                        </div>
+               <!--         <div th:with="occupiedCount=${blocksByCompartment.values().stream().flatMap(blocks -> blocks.stream()).mapToInt(block -> block.occupied ? 1 : 0).sum()},
+                                     totalBlocks=${blocksByCompartment.values().stream().flatMap(blocks -> blocks.stream()).mapToInt(block -> 1).sum()}" class="col-md-3">
+                            <h4>Occupied Blocks</h4>
+                            <h3 th:text="${occupiedCount} + ' / ' + ${totalBlocks}"></h3>
+                        </div>
+                        <div th:with="occupiedCount=${blocksByCompartment.values().stream().flatMap(blocks -> blocks.stream()).mapToInt(block -> block.occupied ? 1 : 0).sum()},
+                                     totalBlocks=${blocksByCompartment.values().stream().flatMap(blocks -> blocks.stream()).mapToInt(block -> 1).sum()}" class="col-md-3">
+                            <h4>Available Blocks</h4>
+                            <h3 th:text="${totalBlocks - occupiedCount}"></h3>
+                        </div>   -->
+						<div class="col-md-3">
+						    <h4>Occupied Blocks</h4>
+						    <h3 th:text="${occupiedCount} + ' / ' + ${totalBlocks}"></h3>
+						</div>
+						<div class="col-md-3">
+						    <h4>Available Blocks</h4>
+						    <h3 th:text="${totalBlocks - occupiedCount}"></h3>
+						</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Compartments and Blocks -->
+        <div th:each="compartmentEntry : ${blocksByCompartment}" class="compartment-section">
+            <h3 class="text-primary mb-4">
+                <i class="fas fa-warehouse"></i> Compartment <span th:text="${compartmentEntry.key}"></span>
+            </h3>
+            
+            <div class="row">
+                <div th:each="block : ${compartmentEntry.value}" class="col-lg-4 col-md-6">
+                    <div class="card block-card" 
+                         th:class="${'card block-card ' + (block.occupied ? 'occupied' : 'available')}"
+                         th:onclick="'location.href=\'/block-details/' + ${block.id} + '\''">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Block <span th:text="${block.blockName}"></span></h5>
+                            <span th:if="${block.occupied}" class="badge bg-danger">Occupied</span>
+                            <span th:unless="${block.occupied}" class="badge bg-success">Available</span>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${block.occupied && block.miller != null}">
+                                <p class="card-text">
+                                    <strong>Miller:</strong> <span th:text="${block.miller.millerName}"></span><br>
+                                    <strong>Code:</strong> <span th:text="${block.miller.millerCode}"></span>
+                                </p>
+                                
+                                <!-- Capacity Bar -->
+                                <div class="mb-2">
+                                    <small class="text-muted">Truck Capacity</small>
+                                    <div class="capacity-bar">
+                                        <div th:with="truckCount=${truckCounts.get(block.miller.millerCode) ?: 0},
+                                                     percentage=${(truckCount * 100.0) / block.capacity}"
+                                             class="capacity-fill"
+                                             th:class="${'capacity-fill ' + (percentage >= 100 ? 'capacity-full' : (percentage > 0 ? 'capacity-partial' : 'capacity-empty'))}"
+                                             th:style="'width: ' + ${percentage > 100 ? 100 : percentage} + '%'"></div>
+                                    </div>
+                                    <small th:with="truckCount=${truckCounts.get(block.miller.millerCode) ?: 0}"
+                                           class="text-muted" 
+                                           th:text="${truckCount} + ' / ' + ${block.capacity} + ' trucks'"></small>
+                                </div>
+                                
+                                <div th:with="truckCount=${truckCounts.get(block.miller.millerCode) ?: 0},
+                                             remaining=${block.capacity - truckCount}">
+                                    <span th:if="${remaining > 0}" 
+                                          class="badge bg-warning" 
+                                          th:text="'Can fit ' + ${remaining} + ' more trucks'"></span>
+                                    <span th:if="${remaining <= 0}" 
+                                          class="badge bg-danger">Block Full</span>
+                                </div>
+                            </div>
+                            
+                            <div th:unless="${block.occupied}">
+                                <p class="card-text text-muted">No miller assigned</p>
+                                <p class="card-text">
+                                    <small class="text-muted">Capacity: <span th:text="${block.capacity}"></span> trucks</small>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>Click to view details</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4 mb-4">
+            <a href="/" class="btn btn-primary btn-lg">Return to Home</a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</body>
+</html>

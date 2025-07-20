@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Truck - Godown Management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active">Add Truck</li>
+            </ol>
+        </nav>
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Truck Entry Form</h2>
+            </div>
+            <div class="card-body">
+                <div th:if="${miller != null}" class="alert alert-info mb-4">
+                    <p><strong>Miller:</strong> <span th:text="${miller.millerName}"></span> (Code: <span th:text="${miller.millerCode}"></span>)</p>
+                    <p><strong>Assigned Block:</strong> Compartment <span th:text="${miller.assignedBlock.compartmentNumber}"></span>, 
+                        Block <span th:text="${miller.assignedBlock.blockName}"></span></p>
+                </div>
+                
+                <form th:action="@{/add-truck}" method="post" th:object="${truck}">
+                    <!-- Hidden miller field -->
+                    <input type="hidden" th:field="*{miller.millerCode}" th:if="${miller != null}">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="truckName" class="form-label">Truck Number:</label>
+                            <input type="text" class="form-control" id="truckName" th:field="*{truckName}" 
+                                   placeholder="Enter Truck Number" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="driverName" class="form-label">Driver Name:</label>
+                            <input type="text" class="form-control" id="driverName" th:field="*{driverName}" 
+                                   placeholder="Enter Driver Name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="arrivalDate" class="form-label">Arrival Date:</label>
+                            <input type="date" class="form-control" id="arrivalDate" th:field="*{arrivalDate}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="unloadingDate" class="form-label">Unloading Date:</label>
+                            <input type="date" class="form-control" id="unloadingDate" th:field="*{unloadingDate}">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="netWeight" class="form-label">Net Weight (kgs):</label>
+                            <input type="number" step="0.01" class="form-control" id="netWeight" th:field="*{netWeight}" 
+                                   placeholder="Enter Net Weight" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="riceType" class="form-label">Rice Type:</label>
+                            <select class="form-select" id="riceType" th:field="*{riceType}" required>
+                                <option value="">Select Rice Type</option>
+                                <option value="Boiled">Boiled</option>
+                                <option value="Raw">Raw</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="inspectorName" class="form-label">Inspector Name:</label>
+                            <input type="text" class="form-control" id="inspectorName" th:field="*{inspectorName}" 
+                                   placeholder="Enter Inspector Name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="gunnyBags" class="form-label">Number of Gunny Bags:</label>
+                            <input type="number" class="form-control" id="gunnyBags" th:field="*{gunnyBags}" 
+                                   placeholder="Enter number of bags" required>
+                            <div class="form-text">Charges will be calculated at ₹15 per bag</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Submit Truck Entry</button>
+                        <a href="/" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Set default dates to today
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            if (!document.getElementById('arrivalDate').value) {
+                document.getElementById('arrivalDate').value = today;
+            }
+            if (!document.getElementById('unloadingDate').value) {
+                document.getElementById('unloadingDate').value = today;
+            }
+        });
+    </script>
+</body>
+</html>

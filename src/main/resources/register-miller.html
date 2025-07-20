@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register Miller - Godown Management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/check-miller">Check Miller</a></li>
+                <li class="breadcrumb-item active">Register Miller</li>
+            </ol>
+        </nav>
+        
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h2 class="mb-0">New Miller Registration</h2>
+            </div>
+            <div class="card-body">
+                <p class="card-text">This miller is not yet registered in the system. Please complete the registration form.</p>
+                
+                <form th:action="@{/register-miller}" method="post" th:object="${miller}">
+                    <div class="mb-3">
+                        <label for="millerCode" class="form-label">Miller Code:</label>
+                        <input type="text" class="form-control" id="millerCode" name="millerCode" 
+                               th:value="${millerCode}" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="millerName" class="form-label">Miller Name:</label>
+                        <input type="text" class="form-control" id="millerName" name="millerName" 
+                               placeholder="Enter Miller Name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Block Capacity Requirement:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="blockCapacity" id="capacity12" value="12" required>
+                            <label class="form-check-label" for="capacity12">
+                                12 Trucks Block (A, B, C, D, I, J, K, L)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="blockCapacity" id="capacity16" value="16">
+                            <label class="form-check-label" for="capacity16">
+                                16 Trucks Block (E, F, G, H, M, N, O, P)
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Next: Select Block</button>
+                        <a href="/check-miller" class="btn btn-secondary">Go Back</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

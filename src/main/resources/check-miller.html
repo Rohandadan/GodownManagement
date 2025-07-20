@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Check Miller - Godown Management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active">Check Miller</li>
+            </ol>
+        </nav>
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Miller Verification</h2>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Please enter the Miller Code to check if they are already registered in the system.</p>
+                
+                <form th:action="@{/check-miller}" method="post">
+                    <div class="mb-3">
+                        <label for="millerCode" class="form-label">Miller Code:</label>
+                        <input type="text" class="form-control" id="millerCode" name="millerCode" 
+                               placeholder="Enter Miller Code" required autofocus>
+                        <div class="form-text">Enter the unique identification code for the miller</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Check Miller</button>
+                        <a href="/" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

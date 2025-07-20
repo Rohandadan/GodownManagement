@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Block - Godown Management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .compartment {
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .block-item {
+            display: flex;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .block-item:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/check-miller">Check Miller</a></li>
+                <li class="breadcrumb-item"><a href="/register-miller">Register Miller</a></li>
+                <li class="breadcrumb-item active">Select Block</li>
+            </ol>
+        </nav>
+        
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h2 class="mb-0">Select Available Block</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <p><strong>Miller:</strong> <span th:text="${miller.millerName}"></span></p>
+                    <p><strong>Block Capacity:</strong> <span th:text="${miller.blockCapacity}"></span> trucks</p>
+                </div>
+                
+                <h4>Available Blocks</h4>
+                
+                <div th:if="${availableBlocks.isEmpty()}" class="alert alert-warning">
+                    No available blocks with the requested capacity. Please contact the administrator.
+                </div>
+                
+                <form th:unless="${availableBlocks.isEmpty()}" th:action="@{/assign-block}" method="post">
+                    <input type="hidden" name="millerCode" th:value="${miller.millerCode}">
+                    <input type="hidden" name="millerName" th:value="${miller.millerName}">
+                    <input type="hidden" name="blockCapacity" th:value="${miller.blockCapacity}">
+                    
+                    <!-- Group blocks by compartment -->
+                    <div th:each="compartment : ${#numbers.sequence(1, 3)}" class="compartment">
+                        <h5>Compartment <span th:text="${compartment}"></span></h5>
+                        <div class="blocks-container">
+                            <div th:each="block : ${availableBlocks}" th:if="${block.compartmentNumber == compartment}" class="block-item">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="blockId" 
+                                           th:id="'block-' + ${block.id}" th:value="${block.id}" required>
+                                    <label class="form-check-label" th:for="'block-' + ${block.id}">
+                                        Block <span th:text="${block.blockName}"></span> - 
+                                        Capacity: <span th:text="${block.capacity}"></span> trucks
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Assign Block & Continue</button>
+                        <a href="/register-miller" class="btn btn-secondary">Go Back</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
